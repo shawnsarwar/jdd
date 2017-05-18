@@ -701,20 +701,24 @@ var jdd = {
          var right = [];
 
         _.each(jdd.diffs, function(diff, index) {
-            $('pre.left div.line' + diff.path1.line + ' span.code').addClass(diff.type).addClass('diff');
+            //$('pre.left div.line' + diff.path1.line + ' span.code').addClass(diff.type).addClass('diff');
             if (_.indexOf(left, diff.path1.line) === -1) {
+                /*
                 $('pre.left div.line' + diff.path1.line + ' span.code').click(function() {
                     jdd.handleDiffClick(diff.path1.line, jdd.LEFT);
                 });
+                */
                 left.push(diff.path1.line);
             }
 
-            $('pre.right div.line' + diff.path2.line + ' span.code').addClass(diff.type).addClass('diff');
+            //$('pre.right div.line' + diff.path2.line + ' span.code').addClass(diff.type).addClass('diff');
             if (_.indexOf(right, diff.path2.line) === -1) {
+                /*
                 $('pre.right div.line' + diff.path2.line + ' span.code').click(function() {
                     jdd.handleDiffClick(diff.path2.line, jdd.RIGHT);
                 });
                 right.push(diff.path2.line);
+                */
             }
         });
 
@@ -1019,7 +1023,7 @@ $('#textarearight').val('{"foo":[{  "OBJ_ID": "CN=Timothy Swan,OU=Users,OU=Willo
 };
 
 
-
+/*
 jQuery(document).ready(function() {
     $('#compare').click(function() {
         jdd.compare();
@@ -1045,15 +1049,11 @@ jQuery(document).ready(function() {
 
     $(document).keydown(function(event) {
         if (event.keyCode === 78 || event.keyCode === 39) {
-            /*
-             * The N key or right arrow key
-             */
+
             jdd.highlightNextDiff();
         } else if (event.keyCode === 80 || event.keyCode === 37) {
-            /*
-             * The P key or left arrow key
-             */
             jdd.highlightPrevDiff();
         }
     });
 });
+*/
