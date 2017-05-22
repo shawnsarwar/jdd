@@ -22,6 +22,24 @@
  * the interactions of displaying them.
  */
 /*global jdd:true */
+
+
+
+/*
+    wrapper function, that returns a list of differences between two input json objects 
+*/
+
+module.exports = function(before, after){
+    var config1 = jdd.createConfig();
+    var config2 = jdd.createConfig();
+    jdd.formatAndDecorate(config1, before);
+    jdd.formatAndDecorate(config2, after);
+    jdd.setSourceData(before , after);
+    jdd.diffVal(before, config1, after, config2);
+    jdd.processDiffs()
+    return jdd.diffs;
+}
+
 var jdd = {
 
     LEFT: 'left',
@@ -588,5 +606,4 @@ var jdd = {
         });
 
     }
-
 };
