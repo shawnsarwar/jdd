@@ -30,19 +30,26 @@ var jdd = {
     EQUALITY: 'eq',
     TYPE: 'type',
     MISSING: 'missing',
+    DELETED: 'deleted',
+    ADDED : 'added',
+    MODIFIED : 'modified',
     diffs: [],
     requestCount: 0,
-
+    pre : null,
+    post: null,
     /**
      * Find the differences between the two objects and recurse into their sub objects.
      */
+    setSourceData : function(pre, post){
+        jdd.pre = pre;
+        jdd.post = post;
+    },
     findDiffs: function(/*Object*/ config1, /*Object*/ data1, /*Object*/ config2, /*Object*/ data2) {
        config1.currentPath.push('/');
        config2.currentPath.push('/');
 
        var key;
        var val;
-
        if (data1.length < data2.length) {
            /*
             * This means the second data has more properties than the first.
@@ -77,7 +84,7 @@ var jdd = {
                     */
                    jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                    config2, jdd.generatePath(config2),
-                                                   'Missing property <code>' + key + '</code> from the object on the right side', jdd.MISSING));
+                                                   'deleted:' + key , jdd.DELETED));
                 } else {
                     config2.currentPath.push(key);
                 
@@ -102,7 +109,7 @@ var jdd = {
                if (!data1.hasOwnProperty(key)) {
                    jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                    config2, jdd.generatePath(config2, key),
-                                                   'Missing property <code>' + key + '</code> from the object on the left side', jdd.MISSING));
+                                                   'Added ' + key, jdd.ADDED));
                }
            }
        }
@@ -112,15 +119,14 @@ var jdd = {
      * Generate the differences between two values.  This handles differences of object
      * types and actual values.
      */
-    diffVal: function(val1, config1, val2, config2) { 
-
+    diffVal: function(val1, config1, val2, config2) {
         if (_.isArray(val1)) {
             jdd.diffArray(val1, config1, val2, config2);
         } else if (_.isObject(val1)) {
             if (_.isArray(val2) || _.isString(val2) || _.isNumber(val2) || _.isBoolean(val2)) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                                'Both types should be objects', jdd.TYPE));
+                                                'Both types should be objects', jdd.MODIFIED));
             } else {
                 jdd.findDiffs(config1, val1, config2, val2);
             }
@@ -128,21 +134,21 @@ var jdd = {
             if (!_.isString(val2)) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                               'Both types should be strings', jdd.TYPE));
+                                               'Both types should be strings', jdd.MODIFIED));
             } else if (val1 !== val2) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                               'Both sides should be equal strings', jdd.EQUALITY));
+                                               'Both sides should be equal strings', jdd.MODIFIED));
             }
         } else if (_.isNumber(val1)) {
             if (!_.isNumber(val2)) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                               'Both types should be numbers', jdd.TYPE));
+                                               'Both types should be numbers', jdd.MODIFIED));
             } else if (val1 !== val2) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                               'Both sides should be equal numbers', jdd.EQUALITY));
+                                               'Both sides should be equal numbers', jdd.MODIFIED));
             }
         } else if (_.isBoolean(val1)) {
             jdd.diffBool(val1, config1, val2, config2);
@@ -157,7 +163,7 @@ var jdd = {
         if (!_.isArray(val2)) {
            jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                            config2, jdd.generatePath(config2),
-                                           'Both types should be arrays', jdd.TYPE));
+                                           'Both types should be arrays', jdd.MODIFIED));
         }
 
         if (val1.length < val2.length) {
@@ -168,14 +174,14 @@ var jdd = {
             for (var i = val1.length; i < val2.length; i++) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2, '[' + i + ']'),
-                                                'Missing element <code>' + i + '</code> from the array on the left side', jdd.MISSING));
+                                                'Added: ' + i , jdd.ADDED));
             }
         }
         _.each(val1, function(arrayVal, index) {
             if (val2.length <= index) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1, '[' + index + ']'),
                                                 config2, jdd.generatePath(config2),
-                                                'Missing element <code>' + index + '</code> from the array on the right side', jdd.MISSING));
+                                                'Deleted: ' + index, jdd.DELETED));
             } else {
                 config1.currentPath.push('/[' + index + ']');                
                 config2.currentPath.push('/[' + index + ']');
@@ -199,16 +205,16 @@ var jdd = {
         if (!_.isBoolean(val2)) {
             jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                             config2, jdd.generatePath(config2),
-                                            'Both types should be booleans', jdd.TYPE));
+                                            'Both types should be booleans', jdd.MODIFIED));
         } else if (val1 !== val2) {
             if (val1) {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                                'The left side is <code>true</code> and the right side is <code>false</code>', jdd.EQUALITY));
+                                                'The left side is <code>true</code> and the right side is <code>false</code>', jdd.MODIFIED));
             } else {
                 jdd.diffs.push(jdd.generateDiff(config1, jdd.generatePath(config1),
                                                 config2, jdd.generatePath(config2),
-                                                'The left side is <code>false</code> and the right side is <code>true</code>', jdd.EQUALITY));
+                                                'The left side is <code>false</code> and the right side is <code>true</code>', jdd.MODIFIED));
             }
         }
     },
@@ -444,7 +450,25 @@ var jdd = {
 
         return props;
     },
-
+    /*
+    * Grabs the value at a calculated path
+    */
+    getValueFromPath:  function(sourceData, path, config){
+        var pathParts = path.path.split("/");
+        var current = sourceData;
+        for (var idx in pathParts){
+            var key = pathParts[idx];
+            if (key === ""){ continue;}
+            try{
+                current = current[key];
+            }
+            catch (err){
+                console.log("ERROR:\n", err, "@\n", path, key);
+                return null;
+            }
+        }
+        return current;
+    },
     /**
      * Generate the diff and verify that it matches a JSON path
      */
@@ -472,13 +496,26 @@ var jdd = {
         if (!pathObj2) {
             throw 'Unable to find line number for (' + msg + '): ' + path2;
         }
-
-        return {
+        var diff = {
             path1: pathObj1,
             path2: pathObj2,
             type: type,
-            msg: msg
-        };
+            msg: msg,
+            pre: null,
+            post: null
+        }
+        if(diff.type == jdd.MODIFIED){
+            diff.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
+            diff.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
+        }
+        else if (diff.type == jdd.ADDED){
+            diff.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
+        }
+        else if (diff.type == jdd.DELETED){
+            diff.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
+        }
+
+        return diff;
     },
 
     /**
