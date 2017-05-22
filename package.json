@@ -1,5 +1,5 @@
 {
-  "name":"jdd_simple-json-diff",
+  "name": "jdd_simple-json-diff",
   "version": "1.0.0",
   "description": "A simple way to calculate the difference between two versions of a json object",
   "dependencies": {
@@ -19,5 +19,11 @@
   "bugs": {
     "url": "https://github.com/shawnsarwar/jdd/issues"
   },
-  "homepage": "https://github.com/shawnsarwar/jdd#readme"
+  "homepage": "https://github.com/shawnsarwar/jdd#readme",
+  "devDependencies": {
+    "file": "^0.2.2",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "require": "^2.4.20"
+  }
 }

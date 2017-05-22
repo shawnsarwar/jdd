@@ -17,17 +17,12 @@
  ******************************************************************************/
 'use strict';
 
-/**
- * The jdd object handles all of the functions for the main page.  It finds the diffs and manages
- * the interactions of displaying them.
- */
-/*global jdd:true */
-
-
 
 /*
     wrapper function, that returns a list of differences between two input json objects 
 */
+
+var _ = require("underscore");
 
 module.exports = function(before, after){
     var config1 = jdd.createConfig();
@@ -478,7 +473,14 @@ var jdd = {
             var key = pathParts[idx];
             if (key === ""){ continue;}
             try{
-                current = current[key];
+                if (/\[[0-9]+\]/.test(key)){
+                    var spot = key.replace("[", "");
+                    spot = parseInt(spot.replace("]",""));
+                    console.log(spot);
+                    current = current[spot];
+                }else{
+                    current = current[key] == null ? current: current[key];
+                }
             }
             catch (err){
                 console.log("ERROR:\n", err, "@\n", path, key);
@@ -534,7 +536,6 @@ var jdd = {
         else if (diff.type == jdd.DELETED){
             diff.data.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
         }
-
         return diff;
     },
 
