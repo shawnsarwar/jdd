@@ -501,18 +501,20 @@ var jdd = {
             path2: pathObj2,
             type: type,
             msg: msg,
-            pre: null,
-            post: null
+            data: {
+                pre: null,
+                post: null
+            }
         }
         if(diff.type == jdd.MODIFIED){
-            diff.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
-            diff.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
+            diff.data.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
+            diff.data.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
         }
         else if (diff.type == jdd.ADDED){
-            diff.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
+            diff.data.post = jdd.getValueFromPath(jdd.post , pathObj2, config2);
         }
         else if (diff.type == jdd.DELETED){
-            diff.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
+            diff.data.pre = jdd.getValueFromPath(jdd.pre , pathObj1, config1);
         }
 
         return diff;
