@@ -1,7 +1,10 @@
 {
   "name":"jdd_simple-json-diff",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple way to calculate the difference between two versions of a json object",
+  "dependencies": {
+    "underscore": "^1.8.3"
+  },
   "main": "jdd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
