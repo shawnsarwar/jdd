@@ -476,14 +476,14 @@ var jdd = {
                 if (/\[[0-9]+\]/.test(key)){
                     var spot = key.replace("[", "");
                     spot = parseInt(spot.replace("]",""));
-                    console.log(spot);
+                    //console.log(spot);
                     current = current[spot];
                 }else{
                     current = current[key] == null ? current: current[key];
                 }
             }
             catch (err){
-                console.log("ERROR:\n", err, "@\n", path, key);
+                //console.log("ERROR:\n", err, "@\n", path, key);
                 return null;
             }
         }
