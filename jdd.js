@@ -520,7 +520,6 @@ var jdd = {
             path1: pathObj1,
             path2: pathObj2,
             type: type,
-            msg: msg,
             data: {
                 pre: null,
                 post: null
